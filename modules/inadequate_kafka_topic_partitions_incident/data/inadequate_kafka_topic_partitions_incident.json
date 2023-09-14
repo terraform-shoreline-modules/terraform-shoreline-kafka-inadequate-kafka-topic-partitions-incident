@@ -1,0 +1,90 @@
+{
+  "name": "inadequate_kafka_topic_partitions_incident",
+  "description": "This incident type refers to a situation where the number of partitions for a Kafka topic is insufficient to handle the incoming data stream. This can lead to low throughput and/or increased write latency. In order to resolve this issue, it may be necessary to increase the number of Kafka topic partitions. Failure to address this issue can lead to degraded performance and potential data loss.",
+  "params": [
+    {
+      "name": "TOPIC_NAME",
+      "value": ""
+    },
+    {
+      "name": "BROKER_HOSTNAME",
+      "value": ""
+    },
+    {
+      "name": "NUM_PARTITIONS",
+      "value": ""
+    },
+    {
+      "name": "PORT",
+      "value": ""
+    },
+    {
+      "name": "HOST_NAME",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    },
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Inadequate Kafka Topic Partitions Incident\nThis incident type refers to a situation where the number of partitions for a Kafka topic is insufficient to handle the incoming data stream. This can lead to low throughput and/or increased write latency. In order to resolve this issue, it may be necessary to increase the number of Kafka topic partitions. Failure to address this issue can lead to degraded performance and potential data loss."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the number of partitions for the Kafka topic"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `kafka-topics.sh --bootstrap-server ${BROKER_HOSTNAME}:${PORT} --describe --topic ${TOPIC_NAME}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the current throughput of the Kafka topic"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `kafka-run-class.sh kafka.tools.GetOffsetShell --broker-list ${BROKER_HOSTNAME}:${PORT} --topic ${TOPIC_NAME} --time -1 | awk -F \":\" '{sum += $3} END {print sum}'`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Check the current write latency of the Kafka topic"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `kafka-console-producer.sh --broker-list ${BROKER_HOSTNAME}:${PORT} --topic ${TOPIC_NAME} | kafka-console-consumer.sh --bootstrap-server ${BROKER_HOSTNAME}:${PORT} --topic ${TOPIC_NAME} --consumer-property group.id=test-consumer-group --from-beginning --max-messages 1`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Increase the number of partitions for the Kafka topic"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "(host | host_name=$HOST_NAME) union (pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE) | `kafka-topics.sh --bootstrap-server ${BROKER_HOSTNAME}:${PORT} --alter --topic ${TOPIC_NAME} --partitions ${NUM_PARTITIONS}`"
+    }
+  ]
+}
