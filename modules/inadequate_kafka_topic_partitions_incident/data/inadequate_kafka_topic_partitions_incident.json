@@ -3,19 +3,19 @@
   "description": "This incident type refers to a situation where the number of partitions for a Kafka topic is insufficient to handle the incoming data stream. This can lead to low throughput and/or increased write latency. In order to resolve this issue, it may be necessary to increase the number of Kafka topic partitions. Failure to address this issue can lead to degraded performance and potential data loss.",
   "params": [
     {
-      "name": "TOPIC_NAME",
-      "value": ""
-    },
-    {
-      "name": "BROKER_HOSTNAME",
-      "value": ""
-    },
-    {
       "name": "NUM_PARTITIONS",
       "value": ""
     },
     {
+      "name": "TOPIC_NAME",
+      "value": ""
+    },
+    {
       "name": "PORT",
+      "value": ""
+    },
+    {
+      "name": "BROKER_HOSTNAME",
       "value": ""
     },
     {
